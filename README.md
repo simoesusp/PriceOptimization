@@ -1,2 +1,3 @@
 # PriceOptimization
-shopping sites best prices analyzing engine
+Shopping sites best prices analyzing engine.
+
