@@ -1,0 +1,270 @@
+void FirstParentalGeneration(int ***Best2dAd,float ****FullListAd, float **FitnessAd,float ****FullList2Ad, float **Fitness2Ad,float ****FullList3Ad, float **Fitness3Ad, float ***BaseStructure, int *CardsStudied,int realcards,int manysites,int manyparentals,int manycards){
+    int *provisoryArray;
+    int *Shipps=calloc((manycards),sizeof(int));
+    int therand,position,addable,summer,definer,tocreate=1;
+
+    *FullListAd=malloc((manyparentals)*sizeof(float**));
+    *FitnessAd=calloc(manyparentals,sizeof(float));
+    *FullList2Ad=malloc((manyparentals)*sizeof(float**));
+    *Fitness2Ad=calloc(manyparentals,sizeof(float));
+    *FullList3Ad=malloc((manyparentals)*sizeof(float**));
+    *Fitness3Ad=calloc(manyparentals,sizeof(float));
+    *Best2dAd=malloc((manycards+1)*sizeof(int*));
+
+    for(int i=0;i<manyparentals;i++){
+        (*FullListAd)[i]=malloc(manycards*sizeof(float*));
+        (*FullList2Ad)[i]=malloc(manycards*sizeof(float*));
+        (*FullList3Ad)[i]=malloc(manycards*sizeof(float*));
+        for(int j=0;j<manycards;j++){
+            if(!(i)){(*Best2dAd)[j]=calloc(manysites,sizeof(int));}
+            (*FullListAd)[i][j]=calloc(2,sizeof(float));
+            (*FullList2Ad)[i][j]=calloc(2,sizeof(float));
+            (*FullList3Ad)[i][j]=calloc(2,sizeof(float));
+        }
+        if(!(i)){(*Best2dAd)[manycards]=calloc(manysites,sizeof(int));}
+    }
+
+    for(int m=0;m<manyparentals;m++){
+        (*FitnessAd)[m]=0;
+        summer=0;
+        position=-1;
+        definer=1;
+        for(int i=0;i<manycards;i++){
+            Shipps[i]=-1;
+        }
+
+
+        for(int n=0;n<realcards;n++){
+            provisoryArray=calloc(CardsStudied[n],sizeof(int));
+            for(int o=0;o<CardsStudied[n];o++){
+                position+=1;
+                therand=rand()%(manysites);
+                provisoryArray[o]=therand;
+                (*FullListAd)[m][position][0]=(float)(therand);
+                addable=0;
+                
+                for(int q=0;q<o;q++){
+                    if(provisoryArray[q]==therand){
+                        addable+=1;
+                    }
+                }
+
+                for(int q=0;q<summer;q++){
+                    if(Shipps[q]==therand){
+                        definer=0;
+                        break;
+                    }
+                }
+
+                if(definer){
+                    Shipps[summer]=therand;
+                    summer+=1;
+                }
+                definer=1;
+
+                if(BaseStructure[(int)(therand)][n][addable]==(float)(1000000)){
+                    (*FullListAd)[m][position][1]=(float)(1000000);
+                    (*FitnessAd)[m]+=(float)(1000000);  
+                }
+                else{
+                    (*FullListAd)[m][position][1]=BaseStructure[(int)(therand)][n][addable]*BaseStructure[(int)(therand)][realcards][1];
+                    (*FitnessAd)[m]+=BaseStructure[(int)(therand)][n][addable]*BaseStructure[(int)(therand)][realcards][1];
+                }
+                
+            }
+            free(provisoryArray);
+        }
+        for(int i=0;i<summer;i++){
+            (*FitnessAd)[m]+=BaseStructure[(Shipps[i])][realcards][0];
+        }
+    }
+    free(Shipps);
+}
+
+void ParentalGeneration(float ****FullListAd, float **FitnessAd, float ***BaseStructure, int *CardsStudied,int realcards,int manysites,int manyparentals,int manycards,int initial){
+    int *provisoryArray;
+    int *Shipps=calloc((manycards),sizeof(int));
+    int therand,position,addable,summer,definer;
+
+
+    for(int m=initial;m<manyparentals;m++){
+        (*FitnessAd)[m]=0;
+        summer=0;
+        position=-1;
+        definer=1;
+        for(int i=0;i<manycards;i++){
+            Shipps[i]=-1;
+        }
+
+
+        for(int n=0;n<realcards;n++){
+            provisoryArray=calloc(CardsStudied[n],sizeof(int));
+            for(int o=0;o<CardsStudied[n];o++){
+                position+=1;
+                therand=rand()%(manysites);
+                provisoryArray[o]=therand;
+                (*FullListAd)[m][position][0]=(float)(therand);
+                addable=0;
+                
+                for(int q=0;q<o;q++){
+                    if(provisoryArray[q]==therand){
+                        addable+=1;
+                    }
+                }
+
+                for(int q=0;q<summer;q++){
+                    if(Shipps[q]==therand){
+                        definer=0;
+                        break;
+                    }
+                }
+
+                if(definer){
+                    Shipps[summer]=therand;
+                    summer+=1;
+                }
+                definer=1;
+
+                if(BaseStructure[(int)(therand)][n][addable]==(float)(1000000)){
+                    (*FullListAd)[m][position][1]=(float)(1000000);
+                    (*FitnessAd)[m]+=(float)(1000000);  
+                }
+                else{
+                    (*FullListAd)[m][position][1]=BaseStructure[(int)(therand)][n][addable]*BaseStructure[(int)(therand)][realcards][1];
+                    (*FitnessAd)[m]+=BaseStructure[(int)(therand)][n][addable]*BaseStructure[(int)(therand)][realcards][1];
+                }
+                
+            }
+            free(provisoryArray);
+        }
+        for(int i=0;i<summer;i++){
+            (*FitnessAd)[m]+=BaseStructure[(Shipps[i])][realcards][0];
+        }
+    }
+    free(Shipps);
+}
+
+void FindBest(float *Fitness,float ***FullList,int manyparentals,int manycards){
+    int min=0;
+    float Provisory=0;
+
+    for(int i=1;i<manyparentals;i++){
+        if(Fitness[i]<=Fitness[min]){
+            min=i;
+        }
+    }
+
+    for(int i=0;i<manycards;i++){
+        Provisory=FullList[0][i][0];
+        FullList[0][i][0]=FullList[min][i][0];
+        FullList[min][i][0]=Provisory;
+
+        Provisory=FullList[0][i][1];
+        FullList[0][i][1]=FullList[min][i][1];
+        FullList[min][i][1]=Provisory;
+    }
+
+    Provisory=Fitness[0];
+    Fitness[0]=Fitness[min];
+    Fitness[min]=Provisory;
+}
+
+void NextList(int **Best2d,float ***FullList,float *Fitness,float ***FullList3,float *Fitness3,int manycards,int r){    
+    for(int i=0;i<manycards;i++){
+        Best2d[i][(int)(FullList[0][i][0])]+=1;
+        Best2d[manycards][(int)(FullList[0][i][0])]+=1;
+        FullList3[r][i][0]=FullList[0][i][0];
+        FullList3[r][i][1]=FullList[0][i][1];
+    }
+    Fitness3[r]=Fitness[0];
+}
+
+void BestOfEachGeneration(int **Best2d,float ***FullList, float *Fitness, float ***BaseStructure, int *CardsStudied,int realcards,int manysites,int manyparentals,int manycards){
+    int *provisoryArray;
+    int *Shipps=calloc((manycards),sizeof(int));
+    int therand,position,addable,summer,definer,thesize,randompart;
+    int *SemiBestList=NULL;
+    int *Best1d=NULL;
+
+    Best1d=calloc(manycards,sizeof(int));
+
+    for(int i=0;i<manycards;i++){
+        Best1d[i]=Best2d[i][0];
+        thesize=1;
+        SemiBestList=realloc(SemiBestList,1*sizeof(int));
+        SemiBestList[0]=0;
+        for(int j=1;j<manysites;j++){
+            if((Best2d[i][j]>Best1d[i])||((Best2d[i][j]==Best1d[i]) && (Best2d[manycards][j]>Best2d[manycards][(SemiBestList[0])]))){
+                Best1d[i]=Best2d[i][j];
+                thesize=1;
+                SemiBestList=realloc(SemiBestList,1*sizeof(int));
+                SemiBestList[0]=j;
+            }
+            else if((Best2d[i][j]==Best1d[i]) && (Best2d[manycards][j]==Best2d[manycards][(SemiBestList[0])])){
+                thesize+=1;
+                SemiBestList=realloc(SemiBestList,thesize*sizeof(int));
+                SemiBestList[(thesize-1)]=j;
+            }
+            else{}
+        }
+
+        randompart=rand()%(thesize);
+        Best1d[i]=SemiBestList[randompart];
+    }
+    free(SemiBestList);
+
+
+    Fitness[(manyparentals-1)]=0;
+    summer=0;
+    position=-1;
+    definer=1;
+    for(int i=0;i<manycards;i++){
+        Shipps[i]=-1;
+    }
+
+
+    for(int n=0;n<realcards;n++){
+        provisoryArray=calloc(CardsStudied[n],sizeof(int));
+        for(int o=0;o<CardsStudied[n];o++){
+            position+=1;
+            therand=Best1d[position];
+            provisoryArray[o]=therand;
+            FullList[(manyparentals-1)][position][0]=(float)(therand);
+            addable=0;
+            
+            for(int q=0;q<o;q++){
+                if(provisoryArray[q]==therand){
+                    addable+=1;
+                }
+            }
+
+            for(int q=0;q<summer;q++){
+                if(Shipps[q]==therand){
+                    definer=0;
+                    break;
+                }
+            }
+
+            if(definer){
+                Shipps[summer]=therand;
+                summer+=1;
+            }
+            definer=1;
+
+            if(BaseStructure[(int)(therand)][n][addable]==(float)(1000000)){
+                FullList[(manyparentals-1)][position][1]=(float)(1000000);
+                Fitness[(manyparentals-1)]+=(float)(1000000);  
+            }
+            else{
+                FullList[(manyparentals-1)][position][1]=BaseStructure[(int)(therand)][n][addable]*BaseStructure[(int)(therand)][realcards][1];
+                Fitness[(manyparentals-1)]+=BaseStructure[(int)(therand)][n][addable]*BaseStructure[(int)(therand)][realcards][1];
+            }
+            
+        }
+        free(provisoryArray);
+    }
+    for(int i=0;i<summer;i++){
+        Fitness[(manyparentals-1)]+=BaseStructure[(Shipps[i])][realcards][0];
+    }
+    free(Shipps);
+}
